@@ -1,0 +1,67 @@
+# --- Monorepo files ---
+
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.eslintcache
+.DS_Store
+.vscode
+.idea
+.vercel
+
+# --- Next.js files ---
+
+# dependencies
+packages/frontend/node_modules
+packages/frontend/.pnp
+packages/frontend/.pnp.js
+
+# testing
+packages/frontend/coverage
+
+# next.js
+packages/frontend/.next/
+packages/frontend/out/
+
+# production
+packages/frontend/build
+
+# misc
+packages/frontend/.DS_Store
+packages/frontend/*.pem
+
+# debug
+packages/frontend/npm-debug.log*
+packages/frontend/yarn-debug.log*
+packages/frontend/yarn-error.log*
+packages/frontend/.pnpm-debug.log*
+
+# local env files
+packages/frontend/.env.local
+packages/frontend/.env.development.local
+packages/frontend/.env.test.local
+packages/frontend/.env.production.local
+
+# typescript
+packages/frontend/*.tsbuildinfo
+
+# --- Hardhat files ---
+
+packages/backend/node_modules
+packages/backend/.env
+packages/backend/coverage
+packages/backend/coverage.json
+packages/backend/typechain
+packages/backend/typechain-types
+packages/backend/temp
+
+packages/backend/cache
+packages/backend/artifacts
+
+packages/backend/artifacts-zk
+packages/backend/cache-zk
+
+packages/backend/deployments
