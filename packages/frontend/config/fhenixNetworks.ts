@@ -23,6 +23,7 @@ export const fhenixLocal = defineChain({
   name: "Fhenix Local",
   network: "fhenixLocal",
   nativeCurrency: { name: "tFHE", symbol: "tFHE", decimals: 18 },
+  // nativeCurrency: { name: "Fhunder", symbol: "FTK", decimals: 18 },
   rpcUrls: {
     public: {
       http: ["http://127.0.0.1:42069"],

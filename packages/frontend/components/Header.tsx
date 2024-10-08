@@ -1,6 +1,6 @@
 "use client";
 
-import { Bars3Icon, BugAntIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, BugAntIcon, DocumentTextIcon, PlusIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -18,6 +18,16 @@ export const menuLinks: HeaderMenuLink[] = [
   {
     label: "Home",
     href: "/",
+  },
+  {
+    label: "Create Campaign",
+    href: "/create-campaign",
+    icon: <PlusIcon className="h-4 w-4" />,
+  },
+  {
+    label: "My Campaigns",
+    href: "/my-campaigns",
+    icon: <DocumentTextIcon className="h-4 w-4" />,
   },
   {
     label: "Debug Contracts",
@@ -93,8 +103,8 @@ export const Header = () => {
             <Image alt="Fhenix logo" className="cursor-pointer" fill src="/logo.svg" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold leading-tight">Create Fhenix DApp</span>
-            <span className="text-xs">Fhenix dev stack</span>
+            <span className="font-bold leading-tight">Fhunder</span>
+            <span className="text-xs">Confidential desributed crowdfunding platform</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">

@@ -91,3 +91,25 @@ You can tweak the app config in `packages/frontend/scaffold.config.ts`.
 ## Credits
 
 Many thanks to [Scaffold ETH](https://scaffoldeth.io/) developers for providing a solid foundation for this project.
+
+
+## Web Server
+
+The web server is a simple Express.js server that listens to events from the blockchain and serves the data to the frontend.
+
+To start the server, run the following command:
+
+```
+pnpm start:server
+```
+
+### Rest API
+
+The server exposes the following endpoints:
+
+- `GET /campaigns`: Get all campaigns
+- `GET /campaigns/:id`: Get a campaign by id
+- `GET /campaigns/:id/contributions`: Get all contributions for a campaign
+- `GET /campaigns/:id/contributions/:id`: Get a contribution by id
+- `GET /campaigns/:id/contributions/:id/transactions`: Get all transactions for a contribution
+

@@ -17,7 +17,7 @@ export function useAccountBalance(address?: Address) {
   } = useBalance({
     address,
     watch: true,
-    chainId: targetNetwork.id,
+    chainId: targetNetwork.id
   });
 
   const onToggleBalance = useCallback(() => {

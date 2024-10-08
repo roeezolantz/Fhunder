@@ -11,6 +11,10 @@ const nextConfig = {
   },
   webpack: config => {
     config.resolve.fallback = { fs: false, net: false, tls: false };
+    config.experiments = {
+      asyncWebAssembly: true,
+      layers: true,
+    }
     config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
