@@ -36,6 +36,18 @@ module.exports = {
           ".link:hover": {
             opacity: "80%",
           },
+          ".card-background": {
+            backgroundColor: "#ffffff",
+          },
+          ".title-text": {
+            color: "#212638",
+            fontSize: "1.5rem",
+            fontWeight: "bold",
+          },
+          ".data-text": {
+            color: "#212638",
+            lineHeight: "1.2",
+          },
         },
       },
       {
@@ -68,6 +80,18 @@ module.exports = {
           },
           ".link:hover": {
             opacity: "80%",
+          },
+          ".card-background": {
+            backgroundColor: "#212638",
+          },
+          ".title-text": {
+            color: "#F9FBFF",
+            fontSize: "1.5rem",
+            fontWeight: "bold",
+          },
+          ".data-text": {
+            color: "#F9FBFF",
+            lineHeight: "1.2",
           },
         },
       },

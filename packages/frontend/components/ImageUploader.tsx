@@ -89,11 +89,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUploaded }) => {
         accept="image/*"
       />
       {file ? (
-        <p>{file.name}</p>
+        <p className="text-black">{file.name}</p>
       ) : (
-        <p>Drag and drop an image here, or click to select a file</p>
+        <p className="text-black">Drag and drop an image here, or click to select a file</p>
       )}
-      {uploading && <p className="mt-2">Uploading...</p>}
+      {uploading && <p className="mt-2 text-black">Uploading...</p>}
     </div>
   );
 };

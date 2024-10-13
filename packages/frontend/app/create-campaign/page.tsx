@@ -25,18 +25,27 @@ const CreateCampaign = () => {
   });
 
   useEffect(() => {
-    if (campaignManagerContract) {
-      campaignManagerContract.on('CampaignCreated', (campaignId: string, creator: string) => {
-        if (creator === connectedAddress) {
-          notification.success("Campaign created successfully");
+    console.log("campaignManagerContract changed:", campaignManagerContract);
+    if (!campaignManagerContract) return;
 
-          setTimeout(() => {
-            router.push(`/campaign/${campaignId}`);
-          }, 1000);
-        }
-      });
-    }
-  }, [campaignManagerContract]);
+    const listener = (campaignId: string, creator: string, name: string, description: string, goal: string, minimumContribution: string, deadline: string, event: any) => {
+      console.log("CampaignCreated event received for campaign", campaignId, "created by", creator);
+      if (creator.toLowerCase() === connectedAddress?.toLowerCase()) {
+        notification.success("Campaign created successfully");
+        setTimeout(() => {
+          router.push(`/campaign/${campaignId}`);
+        }, 1000);
+      }
+    };
+
+    console.log("Adding listener...");
+    campaignManagerContract.on('CampaignCreated', listener);
+
+    return () => {
+      console.log("Removing listener in cleanup..");
+      campaignManagerContract.off('CampaignCreated', listener);
+    };
+  }, [campaignManagerContract, connectedAddress, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,13 +57,14 @@ const CreateCampaign = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Submitting form...");
     if (!fhenixClient || !campaignManagerContract) {
       notification.error("Please connect your wallet");
       return;
     }
 
     try {
-      const encryptedGoal = await fhenixClient.encrypt_uint32(Number(formData.goal));
+      const encryptedGoal = await fhenixClient.encrypt_uint32(parseInt(formData.goal));
 
       const deadlineDate = new Date(formData.deadline);
       const durationTillDeadline = Math.floor((deadlineDate.getTime() - Date.now()) / 1000);
@@ -67,9 +77,14 @@ const CreateCampaign = () => {
         durationTillDeadline
       );
 
-      const receipt = await tx.wait();
-      
-      console.log("receipt", receipt);
+      // Wait for more confirmations
+      // const receipt = await tx.wait(2);
+
+      // console.log("Transaction confirmed:", receipt);
+      notification.success("Campaign created successfully");
+      setTimeout(() => {
+        router.push(`/my-campaigns`);
+      }, 3500);
     } catch (error) {
       console.error('Error creating campaign:', error);
       notification.error("Failed to create campaign. Please try again.");
@@ -167,7 +182,7 @@ const CreateCampaign = () => {
         
         <div className="flex items-center justify-between">
           <button
-            className="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="submit"
           >
             Create Campaign

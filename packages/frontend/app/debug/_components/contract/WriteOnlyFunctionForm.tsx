@@ -14,10 +14,11 @@ import {
   transformAbiFunction,
 } from "~~/app/debug/_components/contract";
 import { IntegerInput } from "~~/components/scaffold-eth";
-import { useTransactor } from "~~/hooks/scaffold-eth";
+import { useScaffoldContractWrite, useTransactor } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 
 type WriteOnlyFunctionFormProps = {
+  contractName: ContractName;
   abi: Abi;
   abiFunction: AbiFunction;
   onChange: () => void;
@@ -26,6 +27,7 @@ type WriteOnlyFunctionFormProps = {
 };
 
 export const WriteOnlyFunctionForm = ({
+  contractName,
   abi,
   abiFunction,
   onChange,
@@ -43,7 +45,8 @@ export const WriteOnlyFunctionForm = ({
     data: result,
     isLoading,
     writeAsync,
-  } = useContractWrite({
+  } = useScaffoldContractWrite({
+    contractName,
     address: contractAddress,
     functionName: abiFunction.name,
     abi: abi,

@@ -2,7 +2,7 @@ import { Abi, AbiFunction } from "abitype";
 import { ReadOnlyFunctionForm } from "~~/app/debug/_components/contract";
 import { Contract, ContractName, GenericContract, InheritedFunctions } from "~~/utils/scaffold-eth/contract";
 
-export const ContractReadMethods = ({ deployedContractData }: { deployedContractData: Contract<ContractName> }) => {
+export const ContractReadMethods = ({ deployedContractData, contractName }: { deployedContractData: Contract<ContractName>, contractName: ContractName }) => {
   if (!deployedContractData) {
     return null;
   }
@@ -31,6 +31,7 @@ export const ContractReadMethods = ({ deployedContractData }: { deployedContract
     <>
       {functionsToDisplay.map(({ fn, inheritedFrom }) => (
         <ReadOnlyFunctionForm
+          contractName={contractName}
           abi={deployedContractData.abi as Abi}
           contractAddress={deployedContractData.address}
           abiFunction={fn}

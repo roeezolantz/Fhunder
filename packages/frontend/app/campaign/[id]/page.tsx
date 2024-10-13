@@ -10,6 +10,7 @@ import { FhenixClient } from 'fhenixjs';
 import { useAccount } from 'wagmi';
 import useFhenix from '~~/hooks/fhenix/useFhenix';
 import { notification } from '~~/utils/scaffold-eth';
+import { CampaignManager } from '~~/../backend/types/contracts/CampaignManager.sol';
 
 interface Campaign {
   id: string;
@@ -41,29 +42,30 @@ const CampaignPage = () => {
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [contributionAmount, setContributionAmount] = useState('');
   const { address } = useAccount();
-  const { fhenixClient, campaignManagerContract, tokenContract, campaignManagerContractView} = useFhenix();
+  const { fhenixClient, campaignManagerContract, tokenContract, signer } = useFhenix();
 
   useEffect(() => {
     const fetchCampaign = async () => {
       try {
         const response = await axios.get(`http://localhost:3000/campaigns/${id}`);
-        // const rawCampaignData = await campaignManagerContractView?.getCampaign(Number(id));
-        // const parsedCampaignData = parseCampaignData(id.toString(), rawCampaignData);
-        // debugger;
         setCampaign(response.data);
       } catch (error) {
         console.error('Error fetching campaign:', error);
       }
     };
 
-    if (id && campaignManagerContractView) {
+    if (id) {
       fetchCampaign();
     }
-  }, [id, campaignManagerContractView]);
+  }, [id]);
+
+  const isCampaignEnded = (timestamp: number) => {
+    return new Date(timestamp * 1000) < new Date();
+  };
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000);
-    if (date < new Date()) {
+    if (isCampaignEnded(timestamp)) {
       return <span className='text-red-500'>Ended</span>;
     }
     return date.toLocaleString('en-GB', {
@@ -96,9 +98,6 @@ const CampaignPage = () => {
         // Encrypt the contribution amount
         const encryptedContribution = await fhenixClient.encrypt_uint32(Number(contributionAmount));
 
-        // Call the contribute function on the contract
-        debugger;
-
         const approveFor = await campaignManagerContract?.getAddress();
         const approveTx = await tokenContract?.approveEncrypted(approveFor, encryptedContribution);
         await approveTx.wait();
@@ -107,11 +106,31 @@ const CampaignPage = () => {
         const tx = await campaignManagerContract?.contribute(id, encryptedContribution);
         await tx.wait();
 
-        alert('Contribution successful!');
+        notification.success('Contribution successful!');
         setContributionAmount('');
-        } catch (error) {
+    } catch (error) {
+        if (!!(error as any).reason) {
+            notification.error((error as any).reason);
+        } else {
+            notification.error('Error contributing');
+        }
+        
         console.error('Error contributing:', error);
-        alert('Error contributing. Please try again.');
+    }
+  };
+
+  const handleReleaseFunds = async () => {
+    console.log("Releasing funds");
+    try {
+      let contractWithSigner = campaignManagerContract?.connect(signer) as unknown as CampaignManager;
+      const tx = await contractWithSigner?.releaseFunds(parseInt(id as string));
+      await tx?.wait();
+      notification.success('Funds released successfully!');
+    } catch (error) {
+      notification.error(`Error releasing funds ${
+        (error as any).reason ? `: ${(error as any).reason}` : ''
+      }`);
+      console.error('Error releasing funds:', error);
     }
   };
 
@@ -124,7 +143,7 @@ const CampaignPage = () => {
       <Link href="/" className="text-primary hover:underline mb-4 inline-block">&larr; Back to Campaigns</Link>
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <Image
-          src={campaign.image || '/placeholder-image.jpg'}
+          src={campaign.image}
           alt={campaign.name}
           width={1200}
           height={400}
@@ -152,10 +171,13 @@ const CampaignPage = () => {
               />
               <button
                 onClick={handleContribute}
-                className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark transition-colors w-full"
+                className="bg-blue-600 text-white px-4 py-2 mb-2 rounded hover:bg-primary-dark transition-colors w-full"
               >
                 Contribute Now
               </button>
+              {isCampaignEnded(campaign.deadline) && <button 
+                onClick={handleReleaseFunds}
+                className="bg-orange-400 text-white px-4 py-2 rounded hover:bg-primary-dark transition-colors w-full">Release Conributed Funds</button>}
             </div>
           </div>
         </div>

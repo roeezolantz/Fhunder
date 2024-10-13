@@ -4,7 +4,6 @@ import { useState } from "react";
 import { InheritanceTooltip } from "./InheritanceTooltip";
 import { Abi, AbiFunction } from "abitype";
 import { Address } from "viem";
-import { useContractRead } from "wagmi";
 import {
   ContractInput,
   displayTxResult,
@@ -14,8 +13,10 @@ import {
   transformAbiFunction,
 } from "~~/app/debug/_components/contract";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
+import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 
 type ReadOnlyFunctionFormProps = {
+  contractName: string;
   contractAddress: Address;
   abiFunction: AbiFunction;
   inheritedFrom?: string;
@@ -23,6 +24,7 @@ type ReadOnlyFunctionFormProps = {
 };
 
 export const ReadOnlyFunctionForm = ({
+  contractName,
   contractAddress,
   abiFunction,
   inheritedFrom,
@@ -31,7 +33,8 @@ export const ReadOnlyFunctionForm = ({
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
   const [result, setResult] = useState<unknown>();
 
-  const { isFetching, refetch } = useContractRead({
+  const { isFetching, refetch } = useScaffoldContractRead({
+    contractName,
     address: contractAddress,
     functionName: abiFunction.name,
     abi: abi,
