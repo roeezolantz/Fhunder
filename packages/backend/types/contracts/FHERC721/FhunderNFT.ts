@@ -31,6 +31,7 @@ export interface FhunderNFTInterface extends Interface {
       | "balanceOf"
       | "getApproved"
       | "getCounter"
+      | "getDecryptedAmount"
       | "getEncryptedAmount"
       | "isApprovedForAll"
       | "mintNFT"
@@ -79,6 +80,10 @@ export interface FhunderNFTInterface extends Interface {
   encodeFunctionData(
     functionFragment: "getCounter",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getDecryptedAmount",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getEncryptedAmount",
@@ -147,6 +152,10 @@ export interface FhunderNFTInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getCounter", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getDecryptedAmount",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getEncryptedAmount",
     data: BytesLike
@@ -373,6 +382,12 @@ export interface FhunderNFT extends BaseContract {
 
   getCounter: TypedContractMethod<[], [bigint], "view">;
 
+  getDecryptedAmount: TypedContractMethod<
+    [tokenId: BigNumberish],
+    [bigint],
+    "nonpayable"
+  >;
+
   getEncryptedAmount: TypedContractMethod<
     [tokenId: BigNumberish],
     [bigint],
@@ -478,6 +493,9 @@ export interface FhunderNFT extends BaseContract {
   getFunction(
     nameOrSignature: "getCounter"
   ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getDecryptedAmount"
+  ): TypedContractMethod<[tokenId: BigNumberish], [bigint], "nonpayable">;
   getFunction(
     nameOrSignature: "getEncryptedAmount"
   ): TypedContractMethod<[tokenId: BigNumberish], [bigint], "view">;
@@ -660,7 +678,7 @@ export interface FhunderNFT extends BaseContract {
       MetadataUpdateEvent.OutputObject
     >;
 
-    "NFTMinted(uint256,address,uint256,uint256)": TypedContractEvent<
+    "NFTMinted(uint256,address,uint32,uint256)": TypedContractEvent<
       NFTMintedEvent.InputTuple,
       NFTMintedEvent.OutputTuple,
       NFTMintedEvent.OutputObject

@@ -11,13 +11,13 @@ contract FhunderNFT is ERC721, ERC721URIStorage, Ownable {
     uint256 public _tokenIdCounter;
 
     struct NFTData {
-        euint128 encryptedAmount;
-        uint256 campaignId;
+        euint32 encryptedAmount;
+        uint32 campaignId;
     }
 
     mapping(uint256 => NFTData) public nftData;
 
-    event NFTMinted(uint256 indexed tokenId, address indexed recipient, uint256 indexed campaignId, euint128 encryptedAmount);
+    event NFTMinted(uint256 indexed tokenId, address indexed recipient, uint32 indexed campaignId, euint32 encryptedAmount);
 
     constructor()
         ERC721("FhunderNFT", "FNFT")
@@ -27,7 +27,7 @@ contract FhunderNFT is ERC721, ERC721URIStorage, Ownable {
         _tokenIdCounter = 0;
     }
 
-    function mintNFT(address recipient, euint128 encryptedAmount, uint256 campaignId, string memory tokenURICID) external returns (uint256) {
+    function mintNFT(address recipient, euint32 encryptedAmount, uint32 campaignId, string memory tokenURICID) external returns (uint256) {
         Console.log("Minting NFT for recipient: ", recipient);
         _tokenIdCounter = _tokenIdCounter + 1;
         uint256 newTokenId = _tokenIdCounter;
@@ -43,9 +43,20 @@ contract FhunderNFT is ERC721, ERC721URIStorage, Ownable {
         return newTokenId;
     }
 
-    function getEncryptedAmount(uint256 tokenId) external view returns (euint128) {
+    function getEncryptedAmount(uint256 tokenId) external view returns (euint32) {
+        Console.log("Getting encrypted amount for tokenId: ", tokenId);
+        Console.log("Owner of tokenId: ", ownerOf(tokenId));
+        Console.log("Msg.sender: ", msg.sender);
         require(ownerOf(tokenId) == msg.sender, "You do not own this token");
         return nftData[tokenId].encryptedAmount;
+    }
+
+    function getDecryptedAmount(uint256 tokenId) external returns (uint32) {
+        Console.log("Getting decrypted amount for tokenId: ", tokenId);
+        Console.log("Owner of tokenId: ", ownerOf(tokenId));
+        Console.log("Msg.sender: ", msg.sender);
+        require(ownerOf(tokenId) == msg.sender, "You do not own this token");
+        return nftData[tokenId].encryptedAmount.decrypt();
     }
 
     function tokenURI(uint256 tokenId)

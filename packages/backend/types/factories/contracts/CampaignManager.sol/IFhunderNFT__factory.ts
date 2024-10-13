@@ -20,9 +20,9 @@ const _abi = [
     name: "balanceOf",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "",
-        type: "uint256",
+        type: "uint32",
       },
     ],
     stateMutability: "view",
@@ -41,9 +41,9 @@ const _abi = [
         type: "uint256",
       },
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "campaignId",
-        type: "uint256",
+        type: "uint32",
       },
       {
         internalType: "string",
@@ -54,9 +54,9 @@ const _abi = [
     name: "mintNFT",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "uint32",
         name: "",
-        type: "uint256",
+        type: "uint32",
       },
     ],
     stateMutability: "nonpayable",

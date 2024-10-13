@@ -78,28 +78,12 @@ const deployCampaignManager: DeployFunction = async function (hre: HardhatRuntim
 
   // Mint FTK to the deployer
   const fhunderToken = await hre.ethers.getContractAt("FhunderToken", fhunderTokenResult.address);
-  const encryptedAmount = await hre.fhenixjs.encrypt_uint32(150);;
-  await fhunderToken.mintEncrypted(deployer, encryptedAmount);
-  console.log(`Minted tons of FTK to ${deployer}`);
-
-  const goal = await hre.fhenixjs.encrypt_uint128(BigInt(100));
-  const minimumContribution = 50;
-  const duration = 50;
-
-  const tx = await campaignManager.createCampaign(
-    "wowzekampein",
-    "what a campaign!!!!!",
-    goal,
-    minimumContribution,
-    duration
-  );
-
-  console.log(`Transaction hash: ${tx.hash}`);
-  await tx.wait();
-  console.log("Campaign created successfully");
-
-  // Keep the script running
-  await new Promise(() => {});
+  const encryptedAmount = await hre.fhenixjs.encrypt_uint32(500);
+  const addressesToMint = ["0xd7702EB6Ca4C101C918f7d4eaBeDc36e36260482", "0xF4C236521Ef71AC46A05DFdD6bB9EcFea0Fd1170"];
+  for (const address of addressesToMint) {
+    await fhunderToken.mintEncrypted(address, encryptedAmount);
+    console.log(`Minted tons of FTK to ${address}`);
+  }
 };
 
 export default deployCampaignManager;

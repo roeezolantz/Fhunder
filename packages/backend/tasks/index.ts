@@ -12,3 +12,4 @@ import "./getFTK";
 import "./withdraw";
 import "./getTime";
 import "./startServer";
+import "./releaseFunds";

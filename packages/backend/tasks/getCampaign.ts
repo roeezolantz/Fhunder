@@ -22,6 +22,7 @@ task("task:getCampaign")
     const result = await contract.getCampaign(campaignId);
 
     console.log(`Campaign ${campaignId}:`);
+    console.log(`Owner: ${result.creator}`);
     console.log(`  Name: ${result.name}`);
     console.log(`  Description: ${result.description}`);
     console.log(`  Goal: ${result.goal}`);
@@ -31,4 +32,5 @@ task("task:getCampaign")
     console.log(`  Number of Contributors: ${result.numContributors}`);
     console.log(`  Contributons Count: ${result.contributonsCount}`);
     console.log(`  Withdrawn Date: ${result.withdrawnDate}`);
+    console.log(`  Left to Withdraw: ${result.leftToWithdraw}`);
   });

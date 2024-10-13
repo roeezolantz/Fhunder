@@ -77,14 +77,17 @@ function getInheritedFunctions(sources: Record<string, any>, contractName: strin
 }
 
 function getContractDataFromDeployments() {
+  console.log("Starting to generate the TypeScript contract definition file...");
   if (!fs.existsSync(DEPLOYMENTS_DIR)) {
     throw Error("At least one other deployment script should exist to generate an actual contract.");
   }
   const output = {} as Record<string, any>;
   for (const chainName of getDirectories(DEPLOYMENTS_DIR)) {
+    console.log(`Processing chain ${chainName}...`);
     const chainId = fs.readFileSync(`${DEPLOYMENTS_DIR}/${chainName}/.chainId`).toString();
     const contracts = {} as Record<string, any>;
     for (const contractName of getContractNames(`${DEPLOYMENTS_DIR}/${chainName}`)) {
+      console.log(`Processing contract ${contractName}...`);
       const { abi, address, metadata } = JSON.parse(
         fs.readFileSync(`${DEPLOYMENTS_DIR}/${chainName}/${contractName}.json`).toString(),
       );
@@ -93,6 +96,7 @@ function getContractDataFromDeployments() {
     }
     output[chainId] = contracts;
   }
+  console.log("Finished processing all contracts.");
   return output;
 }
 
@@ -131,4 +135,4 @@ export default generateTsAbis;
 // e.g. yarn deploy --tags generateTsAbis
 generateTsAbis.tags = ["generateTsAbis"];
 
-generateTsAbis.runAtTheEnd = true;
+generateTsAbis.runAtTheEnd = false;

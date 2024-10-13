@@ -23,9 +23,9 @@ import type {
   TypedContractMethod,
 } from "../../common";
 
-export type InEuint128Struct = { data: BytesLike };
+export type InEuint32Struct = { data: BytesLike };
 
-export type InEuint128StructOutput = [data: string] & { data: string };
+export type InEuint32StructOutput = [data: string] & { data: string };
 
 export interface CampaignManagerInterface extends Interface {
   getFunction(
@@ -36,6 +36,7 @@ export interface CampaignManagerInterface extends Interface {
       | "createCampaign"
       | "decryptTotalContributions"
       | "getCampaign"
+      | "getMyCampaign"
       | "getTime"
       | "releaseFunds"
       | "updateCampaignDescription"
@@ -46,6 +47,7 @@ export interface CampaignManagerInterface extends Interface {
     nameOrSignatureOrTopic:
       | "CampaignCreated"
       | "ContributionMade"
+      | "ContributionReleased"
       | "Withdrawal"
   ): EventFragment;
 
@@ -59,11 +61,11 @@ export interface CampaignManagerInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "contribute",
-    values: [BigNumberish, InEuint128Struct]
+    values: [BigNumberish, InEuint32Struct]
   ): string;
   encodeFunctionData(
     functionFragment: "createCampaign",
-    values: [string, string, InEuint128Struct, BigNumberish, BigNumberish]
+    values: [string, string, InEuint32Struct, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "decryptTotalContributions",
@@ -72,6 +74,10 @@ export interface CampaignManagerInterface extends Interface {
   encodeFunctionData(
     functionFragment: "getCampaign",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getMyCampaign",
+    values: [BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "getTime", values?: undefined): string;
   encodeFunctionData(
@@ -103,6 +109,10 @@ export interface CampaignManagerInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getCampaign",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getMyCampaign",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getTime", data: BytesLike): Result;
@@ -169,6 +179,28 @@ export namespace ContributionMadeEvent {
     contributor: string;
     amount: bigint;
     tokenId: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ContributionReleasedEvent {
+  export type InputTuple = [
+    campaignId: BigNumberish,
+    contributor: AddressLike,
+    amount: BigNumberish
+  ];
+  export type OutputTuple = [
+    campaignId: bigint,
+    contributor: string,
+    amount: bigint
+  ];
+  export interface OutputObject {
+    campaignId: bigint;
+    contributor: string;
+    amount: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -257,6 +289,7 @@ export interface CampaignManager extends BaseContract {
         bigint,
         bigint,
         bigint,
+        bigint,
         bigint
       ] & {
         creator: string;
@@ -270,13 +303,14 @@ export interface CampaignManager extends BaseContract {
         numContributors: bigint;
         contributonsCount: bigint;
         withdrawnDate: bigint;
+        leftToWithdraw: bigint;
       }
     ],
     "view"
   >;
 
   contribute: TypedContractMethod<
-    [campaignId: BigNumberish, amount: InEuint128Struct],
+    [campaignId: BigNumberish, amount: InEuint32Struct],
     [void],
     "nonpayable"
   >;
@@ -285,7 +319,7 @@ export interface CampaignManager extends BaseContract {
     [
       name: string,
       description: string,
-      goal: InEuint128Struct,
+      goal: InEuint32Struct,
       minimumContribution: BigNumberish,
       duration: BigNumberish
     ],
@@ -312,6 +346,7 @@ export interface CampaignManager extends BaseContract {
         bigint,
         bigint,
         bigint,
+        bigint,
         bigint
       ] & {
         creator: string;
@@ -324,6 +359,24 @@ export interface CampaignManager extends BaseContract {
         numContributors: bigint;
         contributonsCount: bigint;
         withdrawnDate: bigint;
+        leftToWithdraw: bigint;
+      }
+    ],
+    "view"
+  >;
+
+  getMyCampaign: TypedContractMethod<
+    [campaignId: BigNumberish, publicKey: BytesLike],
+    [
+      [string, string, string, bigint, bigint, bigint, string, bigint] & {
+        creator: string;
+        name: string;
+        description: string;
+        minimumContribution: bigint;
+        deadline: bigint;
+        withdrawnDate: bigint;
+        sealedValue: string;
+        leftToWithdraw: bigint;
       }
     ],
     "view"
@@ -372,6 +425,7 @@ export interface CampaignManager extends BaseContract {
         bigint,
         bigint,
         bigint,
+        bigint,
         bigint
       ] & {
         creator: string;
@@ -385,6 +439,7 @@ export interface CampaignManager extends BaseContract {
         numContributors: bigint;
         contributonsCount: bigint;
         withdrawnDate: bigint;
+        leftToWithdraw: bigint;
       }
     ],
     "view"
@@ -392,7 +447,7 @@ export interface CampaignManager extends BaseContract {
   getFunction(
     nameOrSignature: "contribute"
   ): TypedContractMethod<
-    [campaignId: BigNumberish, amount: InEuint128Struct],
+    [campaignId: BigNumberish, amount: InEuint32Struct],
     [void],
     "nonpayable"
   >;
@@ -402,7 +457,7 @@ export interface CampaignManager extends BaseContract {
     [
       name: string,
       description: string,
-      goal: InEuint128Struct,
+      goal: InEuint32Struct,
       minimumContribution: BigNumberish,
       duration: BigNumberish
     ],
@@ -427,6 +482,7 @@ export interface CampaignManager extends BaseContract {
         bigint,
         bigint,
         bigint,
+        bigint,
         bigint
       ] & {
         creator: string;
@@ -439,6 +495,25 @@ export interface CampaignManager extends BaseContract {
         numContributors: bigint;
         contributonsCount: bigint;
         withdrawnDate: bigint;
+        leftToWithdraw: bigint;
+      }
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getMyCampaign"
+  ): TypedContractMethod<
+    [campaignId: BigNumberish, publicKey: BytesLike],
+    [
+      [string, string, string, bigint, bigint, bigint, string, bigint] & {
+        creator: string;
+        name: string;
+        description: string;
+        minimumContribution: bigint;
+        deadline: bigint;
+        withdrawnDate: bigint;
+        sealedValue: string;
+        leftToWithdraw: bigint;
       }
     ],
     "view"
@@ -475,6 +550,13 @@ export interface CampaignManager extends BaseContract {
     ContributionMadeEvent.OutputObject
   >;
   getEvent(
+    key: "ContributionReleased"
+  ): TypedContractEvent<
+    ContributionReleasedEvent.InputTuple,
+    ContributionReleasedEvent.OutputTuple,
+    ContributionReleasedEvent.OutputObject
+  >;
+  getEvent(
     key: "Withdrawal"
   ): TypedContractEvent<
     WithdrawalEvent.InputTuple,
@@ -483,7 +565,7 @@ export interface CampaignManager extends BaseContract {
   >;
 
   filters: {
-    "CampaignCreated(uint256,address,string,string,uint256,uint128,uint256)": TypedContractEvent<
+    "CampaignCreated(uint32,address,string,string,uint256,uint32,uint256)": TypedContractEvent<
       CampaignCreatedEvent.InputTuple,
       CampaignCreatedEvent.OutputTuple,
       CampaignCreatedEvent.OutputObject
@@ -494,7 +576,7 @@ export interface CampaignManager extends BaseContract {
       CampaignCreatedEvent.OutputObject
     >;
 
-    "ContributionMade(uint256,address,uint256,uint256)": TypedContractEvent<
+    "ContributionMade(uint32,address,uint256,uint256)": TypedContractEvent<
       ContributionMadeEvent.InputTuple,
       ContributionMadeEvent.OutputTuple,
       ContributionMadeEvent.OutputObject
@@ -505,7 +587,18 @@ export interface CampaignManager extends BaseContract {
       ContributionMadeEvent.OutputObject
     >;
 
-    "Withdrawal(uint256,address,uint256)": TypedContractEvent<
+    "ContributionReleased(uint32,address,uint256)": TypedContractEvent<
+      ContributionReleasedEvent.InputTuple,
+      ContributionReleasedEvent.OutputTuple,
+      ContributionReleasedEvent.OutputObject
+    >;
+    ContributionReleased: TypedContractEvent<
+      ContributionReleasedEvent.InputTuple,
+      ContributionReleasedEvent.OutputTuple,
+      ContributionReleasedEvent.OutputObject
+    >;
+
+    "Withdrawal(uint32,address,uint256)": TypedContractEvent<
       WithdrawalEvent.InputTuple,
       WithdrawalEvent.OutputTuple,
       WithdrawalEvent.OutputObject

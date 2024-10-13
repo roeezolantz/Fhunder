@@ -4,6 +4,7 @@ import { FhunderToken } from "../types";
 
 task("task:mintFTK", "Mints a large amount of FTK tokens to a specified address")
   .addParam("amount", "The amount of tokens to mint")
+  .addOptionalParam("address", "The address to mint the tokens to")
   .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
     const { fhenixjs, ethers, deployments } = hre;
     const [signer] = await ethers.getSigners();
@@ -19,12 +20,12 @@ task("task:mintFTK", "Mints a large amount of FTK tokens to a specified address"
     )
 
     const amount = parseInt(taskArgs.amount);
-
+    const address = taskArgs.address || signer.address;
     let contractWithSigner = contract.connect(signer) as unknown as FhunderToken;
 
     try {
         const eAmount = await fhenixjs.encrypt_uint32(amount);
-        const tx = await contractWithSigner.mintEncrypted(signer.address, eAmount, {
+        const tx = await contractWithSigner.mintEncrypted(address, eAmount, {
             gasLimit: 1000000000,
         });
 
