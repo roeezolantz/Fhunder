@@ -7,8 +7,6 @@ import Link from 'next/link';
 import { useAccount } from 'wagmi';
 import useFhenix from '~~/hooks/fhenix/useFhenix';
 import { notification } from '~~/utils/scaffold-eth';
-import { fhenixjs } from 'fhenixjs';
-import { ethers } from 'ethers';
 
 interface Campaign {
   id: string;
@@ -26,67 +24,12 @@ interface Campaign {
   leftToWithdraw: number;
 }
 
-function base64ToHex(str: string) {
-    // Decode the base64 string to a binary string
-    const binaryStr = atob(str);
-
-    // Convert the binary string to a hexadecimal string
-    let hexStr = '';
-    for (let i = 0; i < binaryStr.length; i++) {
-        const hex = binaryStr.charCodeAt(i).toString(16);
-        hexStr += hex.padStart(2, '0');
-    }
-    return hexStr;
-}
-
-function toString(str: string) {
-    return str.split('').map(char => {
-        const s = char.charCodeAt(0).toString();
-        return s;
-    }).join('');  
-}
-
-// Convert the decrypted string to a byte array
-function stringToByteArray(str: string) {
-  let byteArray = new Uint8Array(str.length);
-
-  for (let i = 0; i < str.length; i++) {
-    byteArray[i] = str.charCodeAt(i) & 0xFF; // Get the byte value for each character
-  }
-
-  return byteArray;
-}
-
-// Extract a uint32 from the byte array
-function extractUint32(byteArray: Uint8Array, startIndex: number) {
-  // Create a buffer to hold the 4 bytes
-  let buffer = new ArrayBuffer(4);
-  let dataView = new DataView(buffer);
-
-  // Set the bytes in the DataView from the byte array
-  for (let i = 0; i < 4; i++) {
-    dataView.setUint8(i, byteArray[startIndex + i]);
-  }
-
-  // Assuming little-endian; change to false if big-endian
-  return dataView.getUint32(0, true); 
-}
-
-// Main parsing function
-const parseConcatenatedSealedValue = (decryptedValue: string) => {
-  const byteArray = stringToByteArray(decryptedValue);
-
-  // Debugging: Log the byte array
-  console.log("Byte array:", byteArray);
-
-  // Extract the uint32 values
-  const goal = extractUint32(byteArray, 0);
-  const totalContributions = extractUint32(byteArray, 4);
-  const numContributors = extractUint32(byteArray, 8);
-  const contributionsCount = extractUint32(byteArray, 12);
-
-  // Log the extracted values
-  console.log({ goal, totalContributions, numContributors, contributionsCount });
+const parseConcatenatedSealedValue = (decryptedValue: bigint) => {
+  // Extract the uint32 values using bitwise operations
+  const goal = Number(decryptedValue >> 96n & 0xFFFFFFFFn);
+  const totalContributions = Number(decryptedValue >> 64n & 0xFFFFFFFFn);
+  const numContributors = Number(decryptedValue >> 32n & 0xFFFFFFFFn);
+  const contributionsCount = Number(decryptedValue & 0xFFFFFFFFn);
 
   return { goal, totalContributions, numContributors, contributionsCount };
 };
@@ -96,11 +39,11 @@ const MyCampaigns = () => {
   const [decryptedCampaignsData, setDecryptedCampaignsData] = useState<Record<string, Campaign>>({});
   const [visibleCampaigns, setVisibleCampaigns] = useState<Record<string, boolean>>({});
   const { address } = useAccount();
-  const { campaignManagerContract, campaignManagerContractView, fhenixProvider, fhenixClient } = useFhenix();
+  const { campaignManagerContract, fhenixProvider, fhenixClient, initPermit } = useFhenix();
 
   useEffect(() => {
     if (address && campaignManagerContract) {
-        console.log("[MyCampaigns] Fetching my campaigns");
+      console.log("[MyCampaigns] Fetching my campaigns");
       fetchMyCampaigns();
     } else {
         console.log("[MyCampaigns] No address or contracts");
@@ -113,14 +56,20 @@ const MyCampaigns = () => {
 
   const fetchRealData = async (campaignId: string) => {
     try {
-        const accounts = await window?.ethereum?.request({ method: 'eth_requestAccounts' });
-        const keyResult = await fhenixProvider?.send('eth_getEncryptionPublicKey',[accounts?.[0]]);
-        const pk = `0x${base64ToHex(keyResult)}`;
-        const campaignData = await campaignManagerContract?.getMyCampaign(campaignId, pk);
+        // Keeping this as reference for NON WORKING metamask decrypting. It's working up to small numbers (±127), but not for big numbers.
+        // const accounts = await window?.ethereum?.request({ method: 'eth_requestAccounts' });
+        // const keyResult = await fhenixProvider?.send('eth_getEncryptionPublicKey',[accounts?.[0]]);
+        // const pk = `0x${base64ToHex(keyResult)}`;
+        // const rawDecryptedValue = await fhenixProvider?.send('eth_decrypt', [sealedValue, accounts?.[0]]);
+        await initPermit(await campaignManagerContract?.getAddress() || '');
+
+        const contractAddress = await campaignManagerContract?.getAddress() || '';
+        const permit = await fhenixClient?.getPermit(contractAddress, fhenixProvider as any);
+        const campaignData = await campaignManagerContract?.getMyCampaign(campaignId, permit?.publicKey);
         const [creator, name, description, minimumContribution, deadline, withdrawnDate, sealedValue, leftToWithdraw] = campaignData;
 
-        const rawDecryptedValue = await fhenixProvider?.send('eth_decrypt', [sealedValue, accounts?.[0]]);
-        const { goal, totalContributions, numContributors, contributionsCount } = parseConcatenatedSealedValue(rawDecryptedValue);
+        const rawDecryptedValue = await fhenixClient?.unseal(contractAddress, sealedValue);
+        const { goal, totalContributions, numContributors, contributionsCount } = parseConcatenatedSealedValue(rawDecryptedValue!);
         return { 
           creator, 
           name, 
@@ -256,7 +205,7 @@ const MyCampaigns = () => {
       <h1 className="text-3xl font-bold mb-8">My Campaigns</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {myCampaigns.length === 0 && (
-          <p className="text-center text-gray-600 dark:text-gray-300">No campaigns found, let's go create one!</p>
+          <p className="text-center text-gray-600 dark:text-gray-300">No campaigns found, lets go create one!</p>
         )}
         {myCampaigns.map((campaign) => (
           <div key={campaign.id} className="card-background rounded-lg shadow-md overflow-hidden">

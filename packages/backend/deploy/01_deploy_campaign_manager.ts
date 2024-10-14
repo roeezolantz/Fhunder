@@ -78,8 +78,8 @@ const deployCampaignManager: DeployFunction = async function (hre: HardhatRuntim
 
   // Mint FTK to the deployer
   const fhunderToken = await hre.ethers.getContractAt("FhunderToken", fhunderTokenResult.address);
-  const encryptedAmount = await hre.fhenixjs.encrypt_uint32(500);
-  const addressesToMint = ["0xd7702EB6Ca4C101C918f7d4eaBeDc36e36260482", "0xF4C236521Ef71AC46A05DFdD6bB9EcFea0Fd1170"];
+  const encryptedAmount = await hre.fhenixjs.encrypt_uint32(2000);
+  const addressesToMint = ["0xd7702EB6Ca4C101C918f7d4eaBeDc36e36260482", "0xd6ED8d65525AC25e27689358CA97a3561c6cCF1c"];
   for (const address of addressesToMint) {
     await fhunderToken.mintEncrypted(address, encryptedAmount);
     console.log(`Minted tons of FTK to ${address}`);

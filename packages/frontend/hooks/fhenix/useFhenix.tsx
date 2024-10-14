@@ -28,6 +28,8 @@ const useFhenix = () => {
   const [fhenixClientState, setFhenixClientState] = useState<FhenixClient | null>(fhenixClient.current ?? null);
   const [fhenixProviderState, setFhenixProviderState] = useState<JsonRpcProvider | BrowserProvider | null>(fhenixProvider.current ?? null);
   const [campaignManagerContractViewState, setCampaignManagerContractViewState] = useState<ethers.Contract | null>(campaignManagerContractView.current ?? null);
+  const [permitInitialized, setPermitInitialized] = useState<Record<string, boolean>>({});
+
   const initFhenixClient = async () => {
     if (fhenixClient.current != null) {
       return fhenixClient.current;
@@ -51,9 +53,6 @@ const useFhenix = () => {
 
     fhenixClient.current = new FhenixClient({ provider: fhenixProvider.current as SupportedProvider });
     setFhenixClientState(fhenixClient.current);
-
-    // const campaignManagerPermit = await generatePermit(CampaignManager.address, fhenixProvider.current as SupportedProvider);
-    // fhenixClient.current.storePermit(campaignManagerPermit!);
 
     // const tokenPermit = await generatePermit(FhunderToken.address, fhenixProvider.current as SupportedProvider);
     // fhenixClient.current.storePermit(tokenPermit!);
@@ -135,6 +134,15 @@ const useFhenix = () => {
     initAll();
   }, []);
 
+  const initPermit = async (contractAddress: string) => {
+    if (permitInitialized[contractAddress]) {
+      return;
+    }
+    setPermitInitialized((prev) => ({ ...prev, [contractAddress]: true }));
+    const permit = await generatePermit(contractAddress, fhenixProvider.current as SupportedProvider);
+    fhenixClient?.current?.storePermit(permit!);
+  }
+
   return {
     fhenixClient: fhenixClientState,
     fhenixProvider: fhenixProviderState,
@@ -145,6 +153,7 @@ const useFhenix = () => {
     campaignManagerContract: campaignManagerContractState,
     nftContract: nftContractState,
     campaignManagerContractView: campaignManagerContractViewState,
+    initPermit,
     // nftContractView: nftContractView.current,
     // tokenContractView: tokenContractView.current,
   };

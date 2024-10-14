@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { InheritanceTooltip } from "./InheritanceTooltip";
 import { Abi, AbiFunction } from "abitype";
 import { Address, TransactionReceipt } from "viem";
-import { useContractWrite, useNetwork, useWaitForTransaction } from "wagmi";
+import { useNetwork, useWaitForTransaction } from "wagmi";
 import {
   ContractInput,
   TxReceipt,
@@ -16,6 +16,7 @@ import {
 import { IntegerInput } from "~~/components/scaffold-eth";
 import { useScaffoldContractWrite, useTransactor } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { ContractName } from "~~/utils/scaffold-eth/contract";
 
 type WriteOnlyFunctionFormProps = {
   contractName: ContractName;

@@ -20,7 +20,7 @@
         "test": "REPORT_GAS=true hardhat test --network localfhenix",
         "verify": "hardhat etherscan-verify",
         "task:createCampaign": "hardhat task:createCampaign",
-        "task:cc": "hardhat task:createCampaign --name \"my very first one\" --description \"wow thats a good one\" --goal 130 --minimum-contribution 10 --duration 600",
+        "task:cc": "hardhat task:createCampaign --name \"my very first one\" --description \"wow thats a good one\" --goal 13000 --minimum-contribution 10 --duration 600",
         "task:roee": "hardhat task:contribute --campaign-id 1 --amount 150",
         "task:contribute": "hardhat task:contribute",
         "task:getCampaign": "hardhat task:getCampaign",

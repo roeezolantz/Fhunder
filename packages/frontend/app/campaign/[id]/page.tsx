@@ -5,8 +5,6 @@ import { useParams } from 'next/navigation';
 import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ethers } from 'ethers';
-import { FhenixClient } from 'fhenixjs';
 import { useAccount } from 'wagmi';
 import useFhenix from '~~/hooks/fhenix/useFhenix';
 import { notification } from '~~/utils/scaffold-eth';
@@ -22,20 +20,6 @@ interface Campaign {
   image: string;
   creator: string;
 }
-
-const parseCampaignData = (id: string, campaignData: any): Campaign => {
-    const [creatorAddress, name, description, goal, minimumContribution, deadline, totalContributions, numContributors, contributonsCount, withdrawnDate] = campaignData;
-    return {
-        id,
-        name,
-        description,
-        goal,
-        minimumContribution,
-        deadline,
-        creator: creatorAddress,
-        image: '',
-    }
-};
 
 const CampaignPage = () => {
   const { id } = useParams();
@@ -122,7 +106,7 @@ const CampaignPage = () => {
   const handleReleaseFunds = async () => {
     console.log("Releasing funds");
     try {
-      let contractWithSigner = campaignManagerContract?.connect(signer) as unknown as CampaignManager;
+      const contractWithSigner = campaignManagerContract?.connect(signer) as unknown as CampaignManager;
       const tx = await contractWithSigner?.releaseFunds(parseInt(id as string));
       await tx?.wait();
       notification.success('Funds released successfully!');
@@ -140,8 +124,8 @@ const CampaignPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Link href="/" className="text-primary hover:underline mb-4 inline-block">&larr; Back to Campaigns</Link>
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <Link href="/" className="data-text hover:underline mb-4 inline-block">&larr; Back to Campaigns</Link>
+      <div className="card-background rounded-lg shadow-md overflow-hidden">
         <Image
           src={campaign.image}
           alt={campaign.name}
@@ -151,7 +135,7 @@ const CampaignPage = () => {
         />
         <div className="p-6">
           <h1 className="text-3xl font-bold mb-4">{campaign.name}</h1>
-          <p className="text-gray-600 mb-6">{campaign.description}</p>
+          <p className="data-text mb-6">{campaign.description}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h2 className="text-xl font-semibold mb-2">Campaign Details</h2>

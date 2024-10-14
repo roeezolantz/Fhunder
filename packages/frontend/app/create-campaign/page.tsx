@@ -3,9 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAccount } from 'wagmi';
-import { ethers } from 'ethers';
 import ImageUploader from '~~/components/ImageUploader';
-import { useDeployedContractInfo, useScaffoldContractWrite } from '~~/hooks/scaffold-eth';
 import { notification } from '~~/utils/scaffold-eth';
 import useFhenix from '~~/hooks/fhenix/useFhenix';
 
@@ -28,6 +26,7 @@ const CreateCampaign = () => {
     console.log("campaignManagerContract changed:", campaignManagerContract);
     if (!campaignManagerContract) return;
 
+    /* eslint-disable */
     const listener = (campaignId: string, creator: string, name: string, description: string, goal: string, minimumContribution: string, deadline: string, event: any) => {
       console.log("CampaignCreated event received for campaign", campaignId, "created by", creator);
       if (creator.toLowerCase() === connectedAddress?.toLowerCase()) {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import { ethers, formatUnits } from "ethers";
+import { ethers } from "ethers";
 import { getPermit, SupportedProvider } from "fhenixjs";
 import useFhenix from "~~/hooks/fhenix/useFhenix";
 import FhunderTokenABI from "../../../backend/deployments/localfhenix/FhunderToken.json";

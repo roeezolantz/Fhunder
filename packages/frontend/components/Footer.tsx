@@ -1,7 +1,6 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { SwitchTheme } from "~~/components/SwitchTheme";
-import { BuidlGuidlLogo } from "~~/components/assets/BuidlGuidlLogo";
 import { fhenixLocal } from "~~/config/fhenixNetworks";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { Faucet } from "./scaffold-eth";

@@ -368,26 +368,15 @@ export interface CampaignManager extends BaseContract {
   getMyCampaign: TypedContractMethod<
     [campaignId: BigNumberish, publicKey: BytesLike],
     [
-      [
-        string,
-        string,
-        string,
-        bigint,
-        bigint,
-        bigint,
-        bigint,
-        string,
-        string
-      ] & {
+      [string, string, string, bigint, bigint, bigint, string, bigint] & {
         creator: string;
         name: string;
         description: string;
         minimumContribution: bigint;
         deadline: bigint;
         withdrawnDate: bigint;
+        sealedValue: string;
         leftToWithdraw: bigint;
-        sealedGoal: string;
-        sealedTotalContributions: string;
       }
     ],
     "view"
@@ -516,26 +505,15 @@ export interface CampaignManager extends BaseContract {
   ): TypedContractMethod<
     [campaignId: BigNumberish, publicKey: BytesLike],
     [
-      [
-        string,
-        string,
-        string,
-        bigint,
-        bigint,
-        bigint,
-        bigint,
-        string,
-        string
-      ] & {
+      [string, string, string, bigint, bigint, bigint, string, bigint] & {
         creator: string;
         name: string;
         description: string;
         minimumContribution: bigint;
         deadline: bigint;
         withdrawnDate: bigint;
+        sealedValue: string;
         leftToWithdraw: bigint;
-        sealedGoal: string;
-        sealedTotalContributions: string;
       }
     ],
     "view"

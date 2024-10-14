@@ -30,8 +30,8 @@ const generateData: DeployFunction = async function (hre: HardhatRuntimeEnvironm
   await new Promise((resolve) => setTimeout(resolve, 10000));
 
   const tx = await campaignManager.createCampaign(
-    "wowzekampein",
-    "what a campaign!!!!!",
+    "Help Fhunder Kickstart",
+    "Money is always needed for good things to happen. Help us make a difference!",
     goal,
     minimumContribution,
     duration

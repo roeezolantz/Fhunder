@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   412346: {
     CampaignManager: {
-      address: "0x66156017F19138860AAC6e79165c2063cFF83157",
+      address: "0xB8F92B06Ba405C6947c206E05e0c00D3E353D984",
       abi: [
         {
           inputs: [
@@ -461,19 +461,14 @@ const deployedContracts = {
               type: "uint256",
             },
             {
+              internalType: "string",
+              name: "sealedValue",
+              type: "string",
+            },
+            {
               internalType: "uint32",
               name: "leftToWithdraw",
               type: "uint32",
-            },
-            {
-              internalType: "string",
-              name: "sealedGoal",
-              type: "string",
-            },
-            {
-              internalType: "string",
-              name: "sealedTotalContributions",
-              type: "string",
             },
           ],
           stateMutability: "view",
@@ -540,7 +535,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     FhunderNFT: {
-      address: "0x264A86f230230B1db637281653F1D8533866016e",
+      address: "0x7270F6bE05B183AC7350bDA35D99f281D691F91b",
       abi: [
         {
           inputs: [],
@@ -1270,7 +1265,7 @@ const deployedContracts = {
       },
     },
     FhunderToken: {
-      address: "0xe63DCf159fC726f92cCB9fde5d771Fae0c0B66E2",
+      address: "0x2CB74B672270E37E6Fa44AC065bBa251FC569674",
       abi: [
         {
           inputs: [

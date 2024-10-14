@@ -262,11 +262,8 @@ contract CampaignManager {
         uint32 minimumContribution,
         uint256 deadline,
         uint256 withdrawnDate,
-        uint32 leftToWithdraw,
-        string memory sealedGoal,
-        string memory sealedTotalContributions
-        // string memory sealedNumContributors,
-        // string memory sealedContributionsCount
+        string memory sealedValue,
+        uint32 leftToWithdraw
     ) {
         Campaign storage campaign = campaigns[campaignId];
         // uint32 a = FHE.decrypt(campaign.goal);
@@ -276,17 +273,12 @@ contract CampaignManager {
         // uint128 op2 = uint128(a) << 96 | uint128(b) << 64 | uint128(c) << 32 | uint128(d);
         // sealedValue = FHE.asEuint128(op2).seal(publicKey);
         // FHE.shl(FHE.asEuint128(campaign.goal), FHE.asEuint128(96)) | FHE.shl(FHE.asEuint128(campaign.totalContributions), FHE.asEuint128(64)) | FHE.shl(FHE.asEuint128(campaign.numContributors), FHE.asEuint128(32)) | FHE.asEuint128(campaign.contributonsCount);
-        // euint128 concatenated = FHE.shl(FHE.asEuint128(campaign.goal), FHE.asEuint128(96));
-        // concatenated = FHE.add(concatenated, FHE.shl(FHE.asEuint128(campaign.totalContributions), FHE.asEuint128(64)));
-        // concatenated = FHE.add(concatenated, FHE.shl(FHE.asEuint128(campaign.numContributors), FHE.asEuint128(32)));
-        // concatenated = FHE.add(concatenated, FHE.asEuint128(campaign.contributonsCount));
-        // sealedValue = FHE.sealoutput(concatenated, publicKey);
+        euint128 concatenated = FHE.shl(FHE.asEuint128(campaign.goal), FHE.asEuint128(96));
+        concatenated = FHE.add(concatenated, FHE.shl(FHE.asEuint128(campaign.totalContributions), FHE.asEuint128(64)));
+        concatenated = FHE.add(concatenated, FHE.shl(FHE.asEuint128(campaign.numContributors), FHE.asEuint128(32)));
+        concatenated = FHE.add(concatenated, FHE.asEuint128(campaign.contributonsCount));
+        sealedValue = FHE.sealoutput(concatenated, publicKey);
 
-        sealedGoal = FHE.sealoutput(campaign.goal, publicKey);
-        sealedTotalContributions = FHE.sealoutput(campaign.totalContributions, publicKey);
-        // sealedNumContributors = FHE.sealoutput(campaign.numContributors, publicKey);
-        // sealedContributionsCount = FHE.sealoutput(campaign.contributonsCount, publicKey);
-        
         return (
             campaign.creator,
             campaign.name,
@@ -294,9 +286,8 @@ contract CampaignManager {
             campaign.minimumContribution,
             campaign.deadline,
             campaign.withdrawnDate,
-            FHE.decrypt(campaign.leftToWithdraw),
-            sealedGoal,
-            sealedTotalContributions
+            sealedValue,
+            FHE.decrypt(campaign.leftToWithdraw)
         );
     }
 

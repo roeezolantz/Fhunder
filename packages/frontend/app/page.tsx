@@ -1,12 +1,9 @@
 "use client";
 
 import type { NextPage } from "next";
-import { useAccount } from "wagmi";
 import CampaignList from "~~/components/CampaignList";
 
 const Home: NextPage = () => {
-  const { address: connectedAddress } = useAccount();
-
   return (
     <div className="flex flex-col items-center min-h-screen">
       <main className="container mx-auto px-4 py-8">
