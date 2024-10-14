@@ -33,7 +33,7 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Install dependencies
-        run: pnpm install --immutable
+        run: pnpm install --frozen-lockfile
 
       - name: Run hardhat node, deploy contracts (& generate contracts typescript output)
         run: pnpm chain & pnpm deploy:contracts
