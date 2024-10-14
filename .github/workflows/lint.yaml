@@ -27,6 +27,12 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: pnpm
 
+      # Install pnpm to ensure it's available
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
       - name: Install dependencies
         run: pnpm install --immutable
 
